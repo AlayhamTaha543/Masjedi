@@ -27,7 +27,7 @@ public class Mosque {
 
     private String location;
 
-    @OneToMany(mappedBy = "mosque")
+    @OneToMany(mappedBy = "mosque", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Circle> circles = new ArrayList<>();
 
     @CreationTimestamp

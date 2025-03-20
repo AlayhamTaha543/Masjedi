@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 
+/**
+ * Controller for managing courses.
+ */
 @RestController
 @RequestMapping("/api/courses")
 @RequiredArgsConstructor

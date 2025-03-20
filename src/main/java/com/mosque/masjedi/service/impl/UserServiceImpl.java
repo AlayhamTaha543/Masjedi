@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of the UserService interface.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -27,6 +30,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    /**
+     * Creates a new user.
+     *
+     * @param request the user request
+     * @param role    the user role
+     * @return the created user response
+     */
     @Override
     @Transactional
     public UserResponse createUser(UserRequest request, UserRole role) {
@@ -36,6 +46,12 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(user);
     }
 
+    /**
+     * Gets the current authenticated user.
+     *
+     * @return the current user response
+     * @throws UnauthorizedException if the user is not found
+     */
     @Override
     public UserResponse getCurrentUser() {
         String username = getCurrentUsername();
@@ -44,6 +60,13 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UnauthorizedException("User not found"));
     }
 
+    /**
+     * Gets a user by its ID.
+     *
+     * @param id the user ID
+     * @return the user response
+     * @throws NotFoundException if the user is not found
+     */
     @Override
     public UserResponse getUserById(Long id) {
         return userRepository.findById(id)
@@ -51,6 +74,13 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("User not found"));
     }
 
+    /**
+     * Gets a user by its username.
+     *
+     * @param username the username
+     * @return the user response
+     * @throws NotFoundException if the user is not found
+     */
     @Override
     public UserResponse getUserByUsername(String username) {
         return userRepository.findByUsername(username)
@@ -58,12 +88,25 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("User not found"));
     }
 
+    /**
+     * Gets users by role with pagination.
+     *
+     * @param role     the user role
+     * @param pageable the pagination information
+     * @return the paginated user responses
+     */
     @Override
     public Page<UserResponse> getUsersByRole(UserRole role, Pageable pageable) {
         return userRepository.findByRole(role, pageable)
                 .map(userMapper::toDto);
     }
 
+    /**
+     * Gets students by circle ID.
+     *
+     * @param circleId the circle ID
+     * @return the list of user responses
+     */
     @Override
     public List<UserResponse> getStudentsByCircleId(Long circleId) {
         return userRepository.findStudentsByCircleId(circleId, UserRole.STUDENT)
@@ -72,6 +115,12 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Gets the teacher by circle ID.
+     *
+     * @param circleId the circle ID
+     * @return the user response
+     */
     @Override
     public UserResponse getTeacherByCircleId(Long circleId) {
         return userRepository.findTeacherByCircleId(circleId, UserRole.TEACHER)
@@ -79,6 +128,12 @@ public class UserServiceImpl implements UserService {
                 .orElse(null);
     }
 
+    /**
+     * Gets users by mosque ID.
+     *
+     * @param mosqueId the mosque ID
+     * @return the list of user responses
+     */
     @Override
     public List<UserResponse> getUsersByMosqueId(Long mosqueId) {
         return userRepository.findByMosqueId(mosqueId)
@@ -87,12 +142,26 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Gets users by mosque ID and role with pagination.
+     *
+     * @param mosqueId the mosque ID
+     * @param role     the user role
+     * @param pageable the pagination information
+     * @return the paginated user responses
+     */
     @Override
     public Page<UserResponse> getUsersByMosqueIdAndRole(Long mosqueId, UserRole role, Pageable pageable) {
         return userRepository.findByMosqueIdAndRole(mosqueId, role, pageable)
                 .map(userMapper::toDto);
     }
 
+    /**
+     * Gets available teachers by mosque ID.
+     *
+     * @param mosqueId the mosque ID
+     * @return the list of user responses
+     */
     @Override
     public List<UserResponse> getAvailableTeachers(Long mosqueId) {
         return userRepository.findAvailableTeachers(mosqueId, UserRole.TEACHER)
@@ -101,6 +170,12 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Gets unassigned students by mosque ID.
+     *
+     * @param mosqueId the mosque ID
+     * @return the list of user responses
+     */
     @Override
     public List<UserResponse> getUnassignedStudentsByMosqueId(Long mosqueId) {
         return userRepository.findUnassignedStudentsByMosqueId(mosqueId, UserRole.STUDENT)
@@ -109,6 +184,14 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Updates a user.
+     *
+     * @param id      the user ID
+     * @param request the user request
+     * @return the updated user response
+     * @throws NotFoundException if the user is not found
+     */
     @Override
     @Transactional
     public UserResponse updateUser(Long id, UserRequest request) {
@@ -119,6 +202,13 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(user);
     }
 
+    /**
+     * Changes the password of the current user.
+     *
+     * @param currentPassword the current password
+     * @param newPassword     the new password
+     * @throws UnsupportedOperationException if the method is not implemented
+     */
     @Override
     @Transactional
     public void changePassword(String currentPassword, String newPassword) {
@@ -127,6 +217,12 @@ public class UserServiceImpl implements UserService {
         throw new UnsupportedOperationException("Not implemented yet - requires Keycloak Admin Client");
     }
 
+    /**
+     * Deletes a user.
+     *
+     * @param id the user ID
+     * @throws NotFoundException if the user is not found
+     */
     @Override
     @Transactional
     public void deleteUser(Long id) {
@@ -136,12 +232,25 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
+    /**
+     * Transfers a student to a new circle.
+     *
+     * @param studentId   the student ID
+     * @param newCircleId the new circle ID
+     */
     @Override
     @Transactional
     public void transferStudentToCircle(Long studentId, Long newCircleId) {
         userRepository.transferStudentToCircle(studentId, newCircleId, UserRole.STUDENT);
     }
 
+    /**
+     * Gets the current username from the security context.
+     *
+     * @return the current username
+     * @throws UnauthorizedException if the user information cannot be extracted
+     *                               from the token
+     */
     private String getCurrentUsername() {
         try {
             Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

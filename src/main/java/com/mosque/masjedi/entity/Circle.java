@@ -1,22 +1,28 @@
 package com.mosque.masjedi.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "circles")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Circle {
+public class Circle extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,18 +30,33 @@ public class Circle {
     @NotBlank
     private String title;
 
-    @ManyToOne
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mosque_id")
     private Mosque mosque;
 
-    @ManyToOne
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teacher_id")
     private User teacher;
 
-    @OneToMany(mappedBy = "circle")
-    private List<User> students = new ArrayList<>();
+    @JsonManagedReference
+    @ToString.Exclude
+    @OneToMany(mappedBy = "circle", fetch = FetchType.LAZY)
+    private Set<User> students = new HashSet<>();
 
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    // Helper methods
+    public void addStudent(User student) {
+        students.add(student);
+        student.setCircle(this);
+    }
+
+    public void removeStudent(User student) {
+        students.remove(student);
+        student.setCircle(null);
+    }
 }

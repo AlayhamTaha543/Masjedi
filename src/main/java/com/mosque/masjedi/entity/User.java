@@ -2,52 +2,61 @@ package com.mosque.masjedi.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Setter;
+import lombok.ToString;
+
+import org.hibernate.annotations.NaturalId;
 import com.mosque.masjedi.entity.enums.UserRole;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Table(name = "users", indexes = @Index(columnList = "username"))
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "users")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@ToString(exclude = { "circle", "mosque", "taughtCircles" })
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+public class User extends BaseEntity {
 
+    @NaturalId
     @NotBlank
-    @Column(unique = true)
+    @Column(unique = true, updatable = false)
     private String username;
 
+    @Convert(converter = PasswordConverter.class)
     @NotBlank
     private String password;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_circle_id")
     private Circle circle;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_mosque_id")
     private Mosque mosque;
 
-    @OneToMany(mappedBy = "teacher")
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Circle> taughtCircles = new ArrayList<>();
 
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    // Helper methods
+    public void joinCircle(Circle circle) {
+        this.circle = circle;
+        circle.getStudents().add(this);
+    }
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    public void leaveCircle() {
+        if (this.circle != null) {
+            this.circle.getStudents().remove(this);
+            this.circle = null;
+        }
+    }
 }

@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 
+/**
+ * Controller for managing lessons.
+ */
 @RestController
 @RequestMapping("/api/lessons")
 @RequiredArgsConstructor
@@ -69,7 +72,7 @@ public class LessonController {
      */
     @GetMapping("/course/{courseId}/ordered")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<LessonResponse>> getLessonsByCourseIdOrdered(@PathVariable Long courseId) {
+    public ResponseEntity<List<LessonResponse>> getLessonsByCourseIdOrderByOrderAsc(@PathVariable Long courseId) {
         return ResponseEntity.ok(lessonService.getLessonsByCourseIdOrderByOrderAsc(courseId));
     }
 

@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of CourseService.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,6 +26,9 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public CourseResponse createCourse(CourseRequest request) {
@@ -31,6 +37,9 @@ public class CourseServiceImpl implements CourseService {
         return courseMapper.toDto(course);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CourseResponse getCourseById(Long id) {
         return courseRepository.findById(id)
@@ -38,12 +47,18 @@ public class CourseServiceImpl implements CourseService {
                 .orElseThrow(() -> new NotFoundException("Course not found"));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Page<CourseResponse> getAllCourses(Pageable pageable) {
         return courseRepository.findAll(pageable)
                 .map(courseMapper::toDto);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<CourseResponse> getCoursesByCircleId(Long circleId) {
         return courseRepository.findByCircleId(circleId)
@@ -52,6 +67,9 @@ public class CourseServiceImpl implements CourseService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<CourseResponse> getCoursesByStudentId(Long studentId) {
         return courseRepository.findByStudentId(studentId)
@@ -60,12 +78,18 @@ public class CourseServiceImpl implements CourseService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Page<CourseResponse> searchCoursesByTitle(String title, Pageable pageable) {
         return courseRepository.findByNameContainingIgnoreCase(title, pageable)
                 .map(courseMapper::toDto);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public CourseResponse updateCourse(Long id, CourseRequest request) {
@@ -76,6 +100,9 @@ public class CourseServiceImpl implements CourseService {
         return courseMapper.toDto(course);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void deleteCourse(Long id) {

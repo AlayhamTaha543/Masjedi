@@ -17,7 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * Controller for student-specific operations
+ * Controller for student-specific operations.
  */
 @RestController
 @RequestMapping("/api/student")
@@ -26,21 +26,49 @@ import java.util.List;
 public class StudentController {
     private final StudentService studentService;
 
+    /**
+     * Retrieves the courses of the current student.
+     * 
+     * @return ResponseEntity containing List of CourseResponses
+     * @apiNote Requires STUDENT role
+     */
     @GetMapping("/courses")
     public ResponseEntity<List<CourseResponse>> getStudentCourses() {
         return ResponseEntity.ok(studentService.getStudentCourses());
     }
 
+    /**
+     * Retrieves the progress of the current student in a specific course.
+     * 
+     * @param courseId The ID of the course to filter progress
+     * @return ResponseEntity containing List of StudentProgressResponses
+     * @apiNote Requires STUDENT role
+     */
     @GetMapping("/progress/{courseId}")
     public ResponseEntity<List<StudentProgressResponse>> getStudentProgress(@PathVariable Long courseId) {
         return ResponseEntity.ok(studentService.getStudentProgress(courseId));
     }
 
+    /**
+     * Counts the completed lessons of the current student in a specific course.
+     * 
+     * @param courseId The ID of the course to filter completed lessons
+     * @return ResponseEntity containing the count of completed lessons
+     * @apiNote Requires STUDENT role
+     */
     @GetMapping("/progress/{courseId}/completed/count")
     public ResponseEntity<Long> countCompletedLessons(@PathVariable Long courseId) {
         return ResponseEntity.ok(studentService.countCompletedLessons(courseId));
     }
 
+    /**
+     * Retrieves the daily progress of the current student in a specific course.
+     * 
+     * @param courseId The ID of the course to filter progress
+     * @param date     The date to filter progress (optional, defaults to today)
+     * @return ResponseEntity containing List of LogbookResponses
+     * @apiNote Requires STUDENT role
+     */
     @GetMapping("/daily-progress/{courseId}")
     public ResponseEntity<List<LogbookResponse>> getStudentDailyProgress(
             @PathVariable Long courseId,
@@ -50,6 +78,13 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getStudentDailyProgress(courseId, targetDate));
     }
 
+    /**
+     * Retrieves the notes of the current student with pagination.
+     * 
+     * @param pageable Pagination configuration
+     * @return ResponseEntity containing Page of NoteResponses
+     * @apiNote Requires STUDENT role
+     */
     @GetMapping("/notes")
     public ResponseEntity<Page<NoteResponse>> getStudentNotes(Pageable pageable) {
         return ResponseEntity.ok(studentService.getStudentNotes(pageable));

@@ -21,104 +21,135 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of LogbookService.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LogbookServiceImpl implements LogbookService {
-    private final LogbookRepository logbookRepository;
-    private final UserRepository userRepository;
-    private final CourseRepository courseRepository;
-    private final LogbookMapper logbookMapper;
+        private final LogbookRepository logbookRepository;
+        private final UserRepository userRepository;
+        private final CourseRepository courseRepository;
+        private final LogbookMapper logbookMapper;
 
-    @Override
-    @Transactional
-    public LogbookResponse createLogbook(LogbookRequest request) {
-        User student = userRepository.findById(request.studentId())
-                .orElseThrow(() -> new NotFoundException("Student not found"));
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        @Transactional
+        public LogbookResponse createLogbook(LogbookRequest request) {
+                User student = userRepository.findById(request.studentId())
+                                .orElseThrow(() -> new NotFoundException("Student not found"));
 
-        Course course = courseRepository.findById(request.courseId())
-                .orElseThrow(() -> new NotFoundException("Course not found"));
+                Course course = courseRepository.findById(request.courseId())
+                                .orElseThrow(() -> new NotFoundException("Course not found"));
 
-        Logbook log = logbookMapper.toEntity(request);
-        log.setStudent(student);
-        log.setCourse(course);
+                Logbook log = logbookMapper.toEntity(request);
+                log.setStudent(student);
+                log.setCourse(course);
 
-        log = logbookRepository.save(log);
-        return logbookMapper.toDto(log);
-    }
-
-    @Override
-    public LogbookResponse getLogbookById(Long id) {
-        return logbookRepository.findById(id)
-                .map(logbookMapper::toDto)
-                .orElseThrow(() -> new NotFoundException("Logbook not found"));
-    }
-
-    @Override
-    public List<LogbookResponse> getLogbooksByStudentAndCourseAndDay(Long studentId, Long courseId, LocalDate date) {
-        return logbookRepository.findByStudentIdAndCourseIdAndDay(studentId, courseId, date)
-                .stream()
-                .map(logbookMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<LogbookResponse> getLogbooksByStudentAndDay(Long studentId, LocalDate date) {
-        return logbookRepository.findByStudentIdAndDay(studentId, date)
-                .stream()
-                .map(logbookMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<LogbookResponse> getLogbooksByStudentAndCourseAndDateRange(Long studentId, Long courseId,
-            LocalDate startDate, LocalDate endDate) {
-        return logbookRepository.findByStudentIdAndCourseIdAndDateRange(studentId, courseId, startDate, endDate)
-                .stream()
-                .map(logbookMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Page<LogbookResponse> getLogbooksByStudentAndCourse(Long studentId, Long courseId, Pageable pageable) {
-        return logbookRepository.findByStudentIdAndCourseId(studentId, courseId, pageable)
-                .map(logbookMapper::toDto);
-    }
-
-    @Override
-    public List<LogbookResponse> getLogbooksByCircleAndCourseAndDay(Long circleId, Long courseId, LocalDate date) {
-        return logbookRepository.findByCircleIdAndCourseIdAndDay(circleId, courseId, date)
-                .stream()
-                .map(logbookMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional
-    public LogbookResponse updateLogbook(Long id, LogbookRequest request) {
-        Logbook log = logbookRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Logbook not found"));
-
-        User student = userRepository.findById(request.studentId())
-                .orElseThrow(() -> new NotFoundException("Student not found"));
-
-        Course course = courseRepository.findById(request.courseId())
-                .orElseThrow(() -> new NotFoundException("Course not found"));
-
-        logbookMapper.updateEntity(request, log);
-        log.setStudent(student);
-        log.setCourse(course);
-
-        log = logbookRepository.save(log);
-        return logbookMapper.toDto(log);
-    }
-
-    @Override
-    @Transactional
-    public void deleteLogbook(Long id) {
-        if (!logbookRepository.existsById(id)) {
-            throw new NotFoundException("Logbook not found");
+                log = logbookRepository.save(log);
+                return logbookMapper.toDto(log);
         }
-        logbookRepository.deleteById(id);
-    }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public LogbookResponse getLogbookById(Long id) {
+                return logbookRepository.findById(id)
+                                .map(logbookMapper::toDto)
+                                .orElseThrow(() -> new NotFoundException("Logbook not found"));
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public List<LogbookResponse> getLogbooksByStudentAndCourseAndDay(Long studentId, Long courseId,
+                        LocalDate date) {
+                return logbookRepository.findByStudentIdAndCourseIdAndDay(studentId, courseId, date)
+                                .stream()
+                                .map(logbookMapper::toDto)
+                                .collect(Collectors.toList());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public List<LogbookResponse> getLogbooksByStudentAndDay(Long studentId, LocalDate date) {
+                return logbookRepository.findByStudentIdAndDay(studentId, date)
+                                .stream()
+                                .map(logbookMapper::toDto)
+                                .collect(Collectors.toList());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public List<LogbookResponse> getLogbooksByStudentAndCourseAndDateRange(Long studentId, Long courseId,
+                        LocalDate startDate, LocalDate endDate) {
+                return logbookRepository.findByStudentIdAndCourseIdAndDateRange(studentId, courseId, startDate, endDate)
+                                .stream()
+                                .map(logbookMapper::toDto)
+                                .collect(Collectors.toList());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Page<LogbookResponse> getLogbooksByStudentAndCourse(Long studentId, Long courseId, Pageable pageable) {
+                return logbookRepository.findByStudentIdAndCourseId(studentId, courseId, pageable)
+                                .map(logbookMapper::toDto);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public List<LogbookResponse> getLogbooksByCircleAndCourseAndDay(Long circleId, Long courseId, LocalDate date) {
+                return logbookRepository.findByCircleIdAndCourseIdAndDay(circleId, courseId, date)
+                                .stream()
+                                .map(logbookMapper::toDto)
+                                .collect(Collectors.toList());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        @Transactional
+        public LogbookResponse updateLogbook(Long id, LogbookRequest request) {
+                Logbook log = logbookRepository.findById(id)
+                                .orElseThrow(() -> new NotFoundException("Logbook not found"));
+
+                User student = userRepository.findById(request.studentId())
+                                .orElseThrow(() -> new NotFoundException("Student not found"));
+
+                Course course = courseRepository.findById(request.courseId())
+                                .orElseThrow(() -> new NotFoundException("Course not found"));
+
+                logbookMapper.updateEntity(request, log);
+                log.setStudent(student);
+                log.setCourse(course);
+
+                log = logbookRepository.save(log);
+                return logbookMapper.toDto(log);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        @Transactional
+        public void deleteLogbook(Long id) {
+                if (!logbookRepository.existsById(id)) {
+                        throw new NotFoundException("Logbook not found");
+                }
+                logbookRepository.deleteById(id);
+        }
 }

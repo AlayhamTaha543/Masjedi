@@ -49,7 +49,7 @@ public class MosqueServiceImpl implements MosqueService {
 
     @Override
     public Page<MosqueResponse> searchMosquesByLocation(String location, Pageable pageable) {
-        return mosqueRepository.findByLocation(location, pageable)
+        return mosqueRepository.findByLocationContainingIgnoreCase(location, pageable)
                 .map(mosqueMapper::toDto);
     }
 

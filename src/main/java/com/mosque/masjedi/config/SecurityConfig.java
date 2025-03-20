@@ -13,25 +13,29 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-                JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-                jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
+                // Convert JWT roles from Keycloak to Spring Security authorities
+                JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
+                jwtConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
 
                 http
                                 .csrf(csrf -> csrf.disable())
                                 .authorizeHttpRequests(authorize -> authorize
-                                                // Allow OpenAPI/Swagger endpoints
                                                 .requestMatchers(
-                                                                "/v3/api-docs/**", // Correct OpenAPI JSON endpoint
-                                                                "/swagger-ui/**", // Swagger UI resources
-                                                                "/swagger-ui.html" // Swagger UI HTML
-                                                ).permitAll()
+                                                                "/v3/api-docs",
+                                                                "/v3/api-docs/**",
+                                                                "/swagger-ui/**",
+                                                                "/swagger-ui.html",
+                                                                "/webjars/**",
+                                                                "/swagger-resources/**",
+                                                                "/swagger-resources")
+                                                .permitAll()
                                                 .requestMatchers("/api/public/**").permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2ResourceServer(oauth2 -> oauth2
-                                                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
+                                                .jwt(jwt -> jwt
+                                                                .jwtAuthenticationConverter(jwtConverter)))
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

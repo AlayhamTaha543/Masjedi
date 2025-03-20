@@ -3,6 +3,7 @@ package com.mosque.masjedi.repository;
 import com.mosque.masjedi.entity.Lesson;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -21,4 +22,8 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
     // Check if a lesson exists in a specific course
     boolean existsByCourseIdAndId(Long courseId, Long lessonId);
+
+    @Modifying
+    @Query("UPDATE Lesson l SET l.order = l.order + 1 WHERE l.course.id = :courseId AND l.order >= :newOrder")
+    void shiftLessonsForInsert(@Param("courseId") Long courseId, @Param("newOrder") Integer newOrder);
 }

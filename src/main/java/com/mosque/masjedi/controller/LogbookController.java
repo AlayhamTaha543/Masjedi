@@ -16,6 +16,9 @@ import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Controller for managing logbooks.
+ */
 @RestController
 @RequestMapping("/api/logbook")
 @RequiredArgsConstructor

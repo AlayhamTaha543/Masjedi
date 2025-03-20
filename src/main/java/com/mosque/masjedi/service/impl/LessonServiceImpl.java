@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of LessonService.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,6 +27,9 @@ public class LessonServiceImpl implements LessonService {
     private final CourseRepository courseRepository;
     private final LessonMapper lessonMapper;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public LessonResponse createLesson(LessonRequest request) {
@@ -36,6 +42,9 @@ public class LessonServiceImpl implements LessonService {
         return lessonMapper.toDto(lesson);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LessonResponse getLessonById(Long id) {
         return lessonRepository.findById(id)
@@ -43,6 +52,9 @@ public class LessonServiceImpl implements LessonService {
                 .orElseThrow(() -> new NotFoundException("Lesson not found"));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<LessonResponse> getLessonsByCourseId(Long courseId) {
         return lessonRepository.findByCourseId(courseId)
@@ -51,6 +63,9 @@ public class LessonServiceImpl implements LessonService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<LessonResponse> getLessonsByCourseIdOrderByOrderAsc(Long courseId) {
         return lessonRepository.findByCourseIdOrderByOrderAsc(courseId)
@@ -59,16 +74,25 @@ public class LessonServiceImpl implements LessonService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer getMaxOrderByCourseId(Long courseId) {
         return lessonRepository.findMaxOrderByCourseId(courseId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean existsLessonInCourse(Long courseId, Long lessonId) {
         return lessonRepository.existsByCourseIdAndId(courseId, lessonId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public LessonResponse updateLesson(Long id, LessonRequest request) {
@@ -84,6 +108,9 @@ public class LessonServiceImpl implements LessonService {
         return lessonMapper.toDto(lesson);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void deleteLesson(Long id) {

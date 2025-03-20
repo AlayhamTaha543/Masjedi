@@ -45,4 +45,8 @@ public interface CircleRepository extends JpaRepository<Circle, Long> {
     @Modifying
     @Query(value = "DELETE FROM circle_courses WHERE circle_id = :circleId AND course_id = :courseId", nativeQuery = true)
     void removeCourseFromCircle(@Param("circleId") Long circleId, @Param("courseId") Long courseId);
+
+    @Modifying
+    @Query("UPDATE User u SET u.circle.id = :circleId WHERE u.id IN :studentIds")
+    void bulkAssignStudentsToCircle(@Param("studentIds") List<Long> studentIds, @Param("circleId") Long circleId);
 }

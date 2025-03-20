@@ -6,13 +6,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RestResource;
 
 import java.util.List;
 
 public interface MosqueRepository extends JpaRepository<Mosque, Long> {
-    // Basic queries
+
+    @RestResource(path = "byTitleList", rel = "byTitleList")
     List<Mosque> findByTitleContainingIgnoreCase(String title);
 
+    @RestResource(path = "byTitlePage", rel = "byTitlePage")
     Page<Mosque> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
     // Combined queries
@@ -42,7 +45,7 @@ public interface MosqueRepository extends JpaRepository<Mosque, Long> {
     List<Mosque> findByLocation(@Param("location") String location);
 
     @Query("SELECT m FROM Mosque m WHERE m.location LIKE %:location%")
-    Page<Mosque> findByLocation(@Param("location") String location, Pageable pageable);
+    Page<Mosque> findByLocationContainingIgnoreCase(@Param("location") String location, Pageable pageable);
 
     @Query("SELECT COUNT(c) FROM Circle c WHERE c.mosque.id = :mosqueId")
     Long countCirclesByMosqueId(@Param("mosqueId") Long mosqueId);

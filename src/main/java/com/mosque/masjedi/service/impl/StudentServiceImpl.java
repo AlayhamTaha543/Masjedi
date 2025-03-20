@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * Implementation of StudentService that uses other services
- * and gets the current student from the security context
+ * and gets the current student from the security context.
  */
 @Service
 @RequiredArgsConstructor
@@ -33,30 +33,45 @@ public class StudentServiceImpl implements StudentService {
     private final LogbookService logbookService;
     private final NoteService noteService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<CourseResponse> getStudentCourses() {
         Long studentId = getCurrentStudentId();
         return courseService.getCoursesByStudentId(studentId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<StudentProgressResponse> getStudentProgress(Long courseId) {
         Long studentId = getCurrentStudentId();
         return progressService.getStudentProgressByStudentAndCourse(studentId, courseId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Long countCompletedLessons(Long courseId) {
         Long studentId = getCurrentStudentId();
         return progressService.countCompletedLessonsByStudentAndCourse(studentId, courseId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<LogbookResponse> getStudentDailyProgress(Long courseId, LocalDate date) {
         Long studentId = getCurrentStudentId();
         return logbookService.getLogbooksByStudentAndCourseAndDay(studentId, courseId, date);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Page<NoteResponse> getStudentNotes(Pageable pageable) {
         Long studentId = getCurrentStudentId();
@@ -64,7 +79,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     /**
-     * Get the current student's ID from the security context
+     * Get the current student's ID from the security context.
      * 
      * @return the student ID
      * @throws UnauthorizedException if the user is not authenticated or not a
